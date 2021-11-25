@@ -26,7 +26,7 @@ def encode(df):
     # df = df.join(one_hot)
 
     # yes/no
-    cat_columns = df.select_dtypes(include='object').columns
+    cat_columns = df.select_dtypes(include='object').drop(['sub_area'], axis=1).columns
     df[cat_columns] = df[cat_columns].applymap(lambda x: 0 if x == 'no' else 1)
 
     return df
