@@ -1,5 +1,12 @@
+import folium
 import numpy as np
 import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+from math import radians
+from shapely.geometry import Point
+from sklearn.metrics.pairwise import haversine_distances
 
 
 def encode(df):
@@ -48,3 +55,29 @@ def get_place(my_score):
     scores = np.append(scores, my_score)
     scores = np.sort(scores)
     print(f'{np.where(scores == my_score)[0][0]} / {len(scores)}')
+
+
+def distance2kremlin(pos):
+    kremlin = [55.752121, 37.617664]
+
+    kremlin_in_radians = [radians(_) for _ in kremlin]
+    pos_in_radians = [radians(_) for _ in pos]
+
+    result = haversine_distances([kremlin_in_radians, pos_in_radians])[0][1]
+    return result * 6371000/1000
+
+
+def make_grid(geometry, tol=100):
+
+    xmin, xmax, ymin, ymax = 36.665063, 37.955376, 55.113476, 56.046934
+    xx, yy = np.meshgrid(np.linspace(xmin, xmax, tol), np.linspace(ymin, ymax, tol))
+    xc = xx.flatten()
+    yc = yy.flatten()
+
+    pts = gpd.GeoSeries([Point(x, y) for x, y in zip(xc, yc)])
+    in_map = np.array([pts.within(geom) for geom in geometry]).sum(axis=0)
+    pts = gpd.GeoSeries([val for pos, val in enumerate(pts) if in_map[pos]])
+
+    plt.close()
+
+    return pts
