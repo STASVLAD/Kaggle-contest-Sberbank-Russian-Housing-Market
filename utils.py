@@ -1,4 +1,3 @@
-import folium
 import numpy as np
 import pandas as pd
 import geopandas as gpd
@@ -26,11 +25,6 @@ def encode(df):
                'good': 3,
                'excellent': 4, }
     df['ecology'] = df['ecology'].map(eco_map)
-
-    # Sub_area
-    # one_hot = pd.get_dummies(df['sub_area'])
-    # df.drop('sub_area', axis=1, inplace=True)
-    # df = df.join(one_hot)
 
     # yes/no
     cat_columns = df.select_dtypes(include='object').drop(['sub_area'], axis=1).columns
@@ -81,3 +75,50 @@ def make_grid(geometry, tol=100):
     plt.close()
 
     return pts
+
+
+def remove_outliers(all_df):
+    # Numerical outliers
+    all_df.loc[all_df['full_sq'] < 10, 'full_sq'] = np.nan
+    all_df.loc[all_df['full_sq'] > 250, 'full_sq'] /= 10
+    all_df.loc[all_df['full_sq'] > 1000, 'full_sq'] /= 100  # >1500 : np.nan
+
+    all_df.loc[all_df['life_sq'] < 7, 'life_sq'] = np.nan  # 5
+    all_df.loc[all_df['life_sq'] > 500, 'life_sq'] = np.nan
+
+    all_df.loc[all_df['floor'] == 0, 'floor'] = np.nan
+    all_df.loc[all_df['floor'] == 77, 'floor'] = np.nan
+
+    all_df.loc[all_df['max_floor'] == 0, 'max_floor'] = np.nan
+    all_df.loc[all_df['max_floor'] > 57, 'max_floor'] = np.nan
+
+    all_df.loc[all_df['build_year'] == 2, 'build_year'] = 2014
+    all_df.loc[all_df['build_year'] == 20, 'build_year'] = 2014
+    all_df.loc[all_df['build_year'] == 215, 'build_year'] = 2015
+    all_df.loc[all_df['build_year'] == 1691, 'build_year'] = 1961
+    all_df.loc[all_df['build_year'] == 4965, 'build_year'] = 1965
+    all_df.loc[all_df['build_year'] == 20052009, 'build_year'] = 2009
+    all_df.loc[all_df['build_year'] < 1850, 'build_year'] = np.nan
+    all_df.loc[all_df['build_year'] > 2020, 'build_year'] = np.nan
+
+    all_df.loc[all_df['num_room'] == 0, 'num_room'] = np.nan
+    all_df.loc[all_df['num_room'] > 15, 'num_room'] = np.nan
+
+    all_df.loc[all_df['kitch_sq'] > 500, 'kitch_sq'] = np.nan
+    all_df.loc[all_df['kitch_sq'] < 5, 'kitch_sq'] = np.nan  # 2
+
+    all_df.loc[all_df['state'] > 30, 'state'] = np.nan
+
+    # Logical outliers
+    all_df.loc[all_df['life_sq'] > all_df['full_sq'], 'life_sq'] = np.nan
+    all_df.loc[all_df['floor'] > all_df['max_floor'], 'max_floor'] = np.nan
+    all_df.loc[all_df['kitch_sq'] >= all_df['life_sq'], 'kitch_sq'] = np.nan
+
+    # Price outliers
+    idx_outliers_high = all_df[all_df['price_doc'] / all_df['full_sq'] > 350000].index
+    idx_outliers_low = all_df[all_df['price_doc'] / all_df['full_sq'] < 10000].index  # !!!
+    idx_outliers = idx_outliers_low.append(idx_outliers_high)
+
+    all_df.drop(idx_outliers, axis=0, inplace=True)
+
+    return all_df
