@@ -11,19 +11,18 @@ The aim of this competition is to predict the sale price of each property. The t
 The training data is from August 2011 to June 2015, and the test set is from July 2015 to May 2016. The dataset also includes information about overall conditions in Russia's economy and finance sector. 
 
 ## Data preprocessing
-progress: 80% done
+**progress**: 80% done
 
-## Problems and solutions:
 ### :question: Data has a lot missing data
 :bulb: We used gradient boosting model XGBRegressor which could handle missing data by itself
 
 ### :question: Data has some outliers
-:bulb: We just dropped such extreme data
+:bulb: We just dropped such extreme data by analyzing ranges and logic of main features
 ### :question: Data has some typos
-:bulb: We corrected them manually
+:bulb: We corrected them manually. For bad data we assigned np.NaN, for some typos (like `20152019` for `build_year` feature) we assigned logically
 
 ### :question: There are fake prices due to taxes avoiding
-:warning: Such data mostly belong to `product_type == Investment` so we trained two models, one of them shows quite good results, and the second (which is for `product_type == Investment`) of course performs much worse due to fake prices. There is no real approach to handle such data besides dropping it but the main problem is that the test set also contains apartments with fake prices. So, we just consider such data as "noise". What is better to train with it, or drop it, or undersample it we will choose later. Now we just choose the best parameters for models by applying them on `product_type == OwnerOccupied` split.
+:warning: Such data mostly belong to `product_type == Investment`. There is no real approach to handle such data besides dropping it but the main problem is that the test set also contains apartments with fake prices. So, we just consider such data as "noise". What is better to train with it, or drop it, or undersample it we will choose later. Now we just choose the best parameters for models by applying them only on the part of data with `product_type == OwnerOccupied`.
 
 ### :question: There is no exact location of apartments
 :bulb: We approximate location by using `kremlin_km` and `sub_area` features
@@ -40,7 +39,7 @@ progress: 70% done
 
 We use XGBRegressor as the main one because it is one of the SOTA models for this kind of regression tasks.
 
-We split dataset based on `product_type` feature as described before. We trained XGBRegressor on both of them.
+We split dataset based on `product_type` feature as described before. We trained XGBRegressor on both of them. So we trained two models, one of them shows quite good results, and the second (which is for `product_type == Investment`) of course performs much worse due to fake prices.
 
 :thought_balloon: We will experiment with stacking models. Maybe we will train LightGBM and/or RandomForestRegressor and/or LinearRegression on the whole dataset (or on some split) and stack them with XGBRegressor by using some kind of LinearRegression as a final estimator
 
