@@ -7,7 +7,7 @@
 * `solution.ipynb` - current best solution, **result**: 1472 / 3266 (public: 1472 / 3266)
 * `utils.py` - custom functions holder to reduce `report.ipynb` size
 * `research/` - folder with notebooks which contains some analysis (not very informative)
-* Almost absolutely uninformative files and folders: `old_notebooks/`, `data/`, `submissions/`
+* `old_notebooks/`, `data/`, `submissions/` - almost absolutely uninformative files and folders
 
 ## Data description
 
@@ -59,6 +59,7 @@ We split the dataset based on the `product_type` feature. We trained XGBRegresso
 
 ## Macroeconomic data
 **progress**: 10% done
+
 This is the main problem of this competition. We somehow have to detrend our prices. Dataset `macro.csv` may be helpful in this situation, but we didn't find any good approaches to solve it. Also the large part of participants didn't solve it too, they just found some good coefficients by brute forcing test submits.
 
 :thought_balloon: Further we will try to train our data with some manually estimated coefficients. Something like: impact (weights) for objects from 2012 is less than 2015 since 2015 objects is more relevant for 2016 year.
