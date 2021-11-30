@@ -2,6 +2,13 @@
 
 :link: [https://www.kaggle.com/c/sberbank-russian-housing-market/overview](https://www.kaggle.com/c/sberbank-russian-housing-market/overview)
 
+## Notebooks
+* `report.ipynb` - draft of final report
+* `solution.ipynb` - current best solution, **result**: 1472 / 3266 (public: 1472 / 3266)
+* `utils.py` - custom functions holder to reduce `report.ipynb` size
+* `research/` - folder with notebooks which contains some analysis (not very informative)
+* Almost absolutely uninformative files and folders: `old_notebooks/`, `data/`, `submissions/`
+
 ## Data description
 
 In this competition, Sberbank is challenging Kagglers to develop algorithms which use a broad spectrum of features to predict realty prices. Competitors will rely on a rich dataset that includes housing data and macroeconomic patterns. 
@@ -13,18 +20,18 @@ The training data is from August 2011 to June 2015, and the test set is from Jul
 ## Data preprocessing
 **progress**: 90% done
 
-### :question: Data has a lot missing data
+### :question: Data has a lot of missing data
 :bulb: We used gradient boosting model XGBRegressor which could handle missing data by itself
 
 ### :question: Data has some outliers
-:bulb: We can divide outliers in 3 categories.
+:bulb: We can divide outliers into 3 categories.
 
-1. Numerical outliers: some extreme values which very unlikely to be in reality (like enormous number of rooms and etc.). Solution: assigning np.NaN;
-2. Logical outliers: for instances, when maximum floor less then current floor. Solution: assigning np.NaN;
+1. Numerical outliers: some extreme values which are very unlikely to be in reality (like an enormous number of rooms and etc.). Solution: assigning np.NaN;
+2. Logical outliers: for instance, when the maximum floor is less than the current floor. Solution: assigning np.NaN;
 3. Price outliers: fake prices and some extreme data. Solution: dropped them;
-4. 
+
 ### :question: Data has some typos
-:bulb: We corrected them manually. For bad data we assigned np.NaN, for some typos (like `20152019` for `build_year` feature) we assigned depend on other features
+:bulb: We corrected them manually. For bad data we assigned np.NaN, for some typos (like `20152019` for `build_year` feature) we assigned values depending on other features
 
 ### :question: There are fake prices due to taxes avoiding
 :warning: Such data mostly belong to `product_type == Investment`. There is no real approach to handle such data besides dropping it but the main problem is that the test set also contains apartments with fake prices. So, we just consider such data as "noise". What is better to train with it, or drop it, or undersample it we will choose later. Now we just choose the best parameters for models by applying them only on the part of data with `product_type == OwnerOccupied`.
@@ -34,7 +41,7 @@ The training data is from August 2011 to June 2015, and the test set is from Jul
 1. `kremlin_km` and `sub_area` polygons
 2. centroids of `sub_area` polygons
 
-**Comments:** By name of the district (`sub_area` feature) we downloaded geo-polygons, created a grid of points within it, and found the most appropriate location by comparing the calculated distance to kremlin with `kremlin_km` feature. As a result, we got a quite good approximation but of course there are some mistakes
+**Comments:** By name of the district (`sub_area` feature) we downloaded geo-polygons, created a grid of points within it, and found the most appropriate location by comparing the calculated distance to kremlin with the `kremlin_km` feature. As a result, we got a quite good approximation but of course there are some mistakes
 
 :thought_balloon: Later we will try another approach by using distances from the main circle roads of Moscow city which are also presented in the dataset
 
