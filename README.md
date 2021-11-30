@@ -57,6 +57,8 @@ We split the dataset based on the `product_type` feature. We trained XGBRegresso
 
 :thought_balloon: We will experiment with stacking models. Maybe we will train LightGBM and/or RandomForestRegressor and/or LinearRegression on the whole dataset (or on some split) and stack them with XGBRegressor by using some kind of LinearRegression as a final estimator (StackingRegressor)
 
+:thought_balloon: Naive initializations already performed pretty well but further, we will hypertune parameters of the final model
+
 ## Macroeconomic data
 **progress**: 10% done
 

@@ -122,3 +122,9 @@ def remove_outliers(all_df):
     all_df.drop(idx_outliers, axis=0, inplace=True)
 
     return all_df
+
+
+def tverskoe_issue_fix(df):
+    fix_df = pd.read_excel('data/BAD_ADDRESS_FIX.xlsx').drop_duplicates('id').set_index('id')
+    df.update(fix_df, overwrite=True)
+    print('Fix: ', df.index.intersection(fix_df.index).shape[0])
