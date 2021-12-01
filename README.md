@@ -4,9 +4,9 @@
 
 ## Notebooks
 * `report.ipynb` - draft of final report
-* `solution.ipynb` - current best solution, **result**: 1472 / 3266 (public: 1472 / 3266)
+* `solution.ipynb` - current best solution, **result**: 1472 / 3266
 * `utils.py` - custom functions holder to reduce `report.ipynb` size
-* `research/` - folder with notebooks which contains some analysis (not very informative)
+* `research/` - folder with notebooks which contains research part
 * `old_notebooks/`, `data/`, `submissions/` - almost absolutely uninformative files and folders
 
 ## Data description
@@ -51,7 +51,7 @@ The training data is from August 2011 to June 2015, and the test set is from Jul
 ## Models
 **progress**: 80% done
 
-We use XGBRegressor as the main model because it is one of the SOTA models for this kind of regression tasks.
+We use tuned XGBRegressor as the main model because it is one of the SOTA models for this kind of regression tasks.
 
 We split the dataset based on the `product_type` feature. We trained XGBRegressor on both of them. One of them shows quite good results, and the second (which is for `product_type == Investment`) of course performs much worse due to fake prices as we described before
 
@@ -70,10 +70,5 @@ This is the main problem of this competition. We somehow have to detrend our pri
 
 :thought_balloon: If we have enough time we will try to analyze prices and macroeconomic data using time series analysis
 
-To sum up, dealing with this problem is our main goal for now 
-
-## Validation
-**progress**: 10% done
-
-It's an open question how to train models better, how to perform train_test_split, cross-validation and etc. (there is not so much data). We will deal with these problems on the final part
+To sum up, dealing with this problem is our main goal for now
 

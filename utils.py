@@ -114,14 +114,29 @@ def remove_outliers(all_df):
     all_df.loc[all_df['floor'] > all_df['max_floor'], 'max_floor'] = np.nan
     all_df.loc[all_df['kitch_sq'] >= all_df['life_sq'], 'kitch_sq'] = np.nan
 
+    return all_df
+
+
+def remove_fake_prices(df, M1_ratio=0.7, M2_ratio=0.95, M3_ratio=0.8, price_sqm_l=30000, price_sqm_h=600000):
     # Price outliers
-    idx_outliers_high = all_df[all_df['price_doc'] / all_df['full_sq'] > 350000].index
-    idx_outliers_low = all_df[all_df['price_doc'] / all_df['full_sq'] < 10000].index  # !!!
+    idx_outliers_high = df[df['price_doc'] / df['full_sq'] > price_sqm_h].index
+    idx_outliers_low = df[df['price_doc'] / df['full_sq'] < price_sqm_l].index
     idx_outliers = idx_outliers_low.append(idx_outliers_high)
 
-    all_df.drop(idx_outliers, axis=0, inplace=True)
+    df = df.drop(idx_outliers, axis=0)
 
-    return all_df
+    idx_1M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 1_000_000)].index.values
+    idx_2M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 2_000_000)].index.values
+    idx_3M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 3_000_000)].index.values
+    idx_1M_usampled = np.random.choice(idx_1M, size=int(M1_ratio * len(idx_1M)), replace=False)
+    idx_2M_usampled = np.random.choice(idx_2M, size=int(M2_ratio * len(idx_2M)), replace=False)
+    idx_3M_usampled = np.random.choice(idx_3M, size=int(M3_ratio * len(idx_3M)), replace=False)
+
+    df = df.drop(idx_1M_usampled, axis=0)
+    df = df.drop(idx_2M_usampled, axis=0)
+    df = df.drop(idx_3M_usampled, axis=0)
+
+    return df
 
 
 def tverskoe_issue_fix(df):
