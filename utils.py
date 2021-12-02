@@ -44,7 +44,7 @@ def create_submission(model, X_test):
 
 
 def get_place(my_score):
-    df = pd.read_csv('publicleaderboard.csv')
+    df = pd.read_csv('submits/publicleaderboard.csv')
     scores = df['Score'].values
     scores = np.append(scores, my_score)
     scores = np.sort(scores)
