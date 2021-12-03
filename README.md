@@ -8,7 +8,7 @@
 * `utils.py` - custom functions holder to reduce `report.ipynb` size
 * `research/` - folder with notebooks which contains research part
 * `old_solutions/` - folder with previous solutions
-* `old_notebooks/`, `data/`, `submits/` - almost absolutely uninformative files and folders
+* `old_notebooks/`, `data/` - almost absolutely uninformative files and folders
 
 ## Data description
 
