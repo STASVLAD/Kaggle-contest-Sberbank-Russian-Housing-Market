@@ -84,11 +84,25 @@ def make_grid(geometry, tol=100):
 def remove_outliers(all_df):
     # Numerical outliers
     all_df.loc[all_df['full_sq'] < 10, 'full_sq'] = np.nan
-    all_df.loc[all_df['full_sq'] > 250, 'full_sq'] /= 10
-    all_df.loc[all_df['full_sq'] > 1000, 'full_sq'] /= 100  # >1500 : np.nan
+    all_df.loc[all_df['full_sq'] > 1000, 'full_sq'] /= 100  # np.nan or /= 100 (1)
 
-    all_df.loc[all_df['life_sq'] < 7, 'life_sq'] = np.nan  # 5
-    all_df.loc[all_df['life_sq'] > 500, 'life_sq'] = np.nan
+    all_df.loc[(all_df["full_sq"] > 250) &
+               (all_df["life_sq"] / all_df["full_sq"] < 0.3), 'full_sq'] /= 10  # np.nan or /= 10
+
+    all_df.loc[(all_df["full_sq"] > 210) &
+               (all_df["price_doc"] < 10_000_000) &
+               (all_df["life_sq"] > 100), 'life_sq'] /= 10  # np.nan or /= 10
+    all_df.loc[(all_df["full_sq"] > 210) & (all_df["price_doc"] < 10_000_000), 'full_sq'] /= 10  # np.nan or /= 10
+
+    all_df.loc[all_df['life_sq'] < 5, 'life_sq'] = np.nan
+    all_df.loc[all_df['life_sq'] > 1000, 'life_sq'] /= 100  # 74/78 or /= 100
+    all_df.loc[(all_df['life_sq'] > 300) &
+               (all_df['life_sq'] == all_df['full_sq']*10), 'life_sq'] /= 10
+    all_df.loc[all_df['life_sq'] > 300, 'life_sq'] /= 10  # np.nan or /= 10
+
+    all_df.loc[13120, "build_year"] = all_df.loc[13120, "kitch_sq"]
+    all_df.loc[all_df['kitch_sq'] > 200, 'kitch_sq'] = np.nan
+    all_df.loc[all_df['kitch_sq'] < 2, 'kitch_sq'] = np.nan
 
     all_df.loc[all_df['floor'] == 0, 'floor'] = np.nan
     all_df.loc[all_df['floor'] == 77, 'floor'] = np.nan
@@ -108,9 +122,6 @@ def remove_outliers(all_df):
     all_df.loc[all_df['num_room'] == 0, 'num_room'] = np.nan
     all_df.loc[all_df['num_room'] > 15, 'num_room'] = np.nan
 
-    all_df.loc[all_df['kitch_sq'] > 500, 'kitch_sq'] = np.nan
-    all_df.loc[all_df['kitch_sq'] < 5, 'kitch_sq'] = np.nan  # 2
-
     all_df.loc[all_df['state'] > 30, 'state'] = np.nan
 
     all_df.loc[all_df['preschool_quota'] == 0, 'preschool_quota'] = np.nan
@@ -123,24 +134,25 @@ def remove_outliers(all_df):
     return all_df
 
 
-def remove_fake_prices(df, M1_ratio=0.7, M2_ratio=0.95, M3_ratio=0.8, price_sqm_l=30000, price_sqm_h=600000):
+def remove_fake_prices(df, price_sqm_l=10000, price_sqm_h=600000):
     # Price outliers
     idx_outliers_high = df[df['price_doc'] / df['full_sq'] > price_sqm_h].index
     idx_outliers_low = df[df['price_doc'] / df['full_sq'] < price_sqm_l].index
     idx_outliers = idx_outliers_low.append(idx_outliers_high)
 
     df = df.drop(idx_outliers, axis=0)
+    print('REMOVED:', len(idx_outliers))
 
-    idx_1M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 1_000_000)].index.values
-    idx_2M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 2_000_000)].index.values
-    idx_3M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 3_000_000)].index.values
-    idx_1M_usampled = np.random.choice(idx_1M, size=int(M1_ratio * len(idx_1M)), replace=False)
-    idx_2M_usampled = np.random.choice(idx_2M, size=int(M2_ratio * len(idx_2M)), replace=False)
-    idx_3M_usampled = np.random.choice(idx_3M, size=int(M3_ratio * len(idx_3M)), replace=False)
+    # idx_1M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 1_000_000)].index.values
+    # idx_2M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 2_000_000)].index.values
+    # idx_3M = df.loc[(df['product_type'] == 0) & (df['price_doc'] == 3_000_000)].index.values
+    # idx_1M_usampled = np.random.choice(idx_1M, size=int(M1_ratio * len(idx_1M)), replace=False)
+    # idx_2M_usampled = np.random.choice(idx_2M, size=int(M2_ratio * len(idx_2M)), replace=False)
+    # idx_3M_usampled = np.random.choice(idx_3M, size=int(M3_ratio * len(idx_3M)), replace=False)
 
-    df = df.drop(idx_1M_usampled, axis=0)
-    df = df.drop(idx_2M_usampled, axis=0)
-    df = df.drop(idx_3M_usampled, axis=0)
+    # df = df.drop(idx_1M_usampled, axis=0)
+    # df = df.drop(idx_2M_usampled, axis=0)
+    # df = df.drop(idx_3M_usampled, axis=0)
 
     return df
 
