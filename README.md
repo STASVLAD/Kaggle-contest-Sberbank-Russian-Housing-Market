@@ -7,7 +7,8 @@
 * `solution.ipynb` - current best solution, **result**: 1472 / 3266
 * `utils.py` - custom functions holder to reduce `report.ipynb` size
 * `research/` - folder with notebooks which contains research part
-* `old_notebooks/`, `data/`, `submissions/` - almost absolutely uninformative files and folders
+* `old_solutions/` - folder with previous solutions
+* `old_notebooks/`, `data/`, `submits/` - almost absolutely uninformative files and folders
 
 ## Data description
 

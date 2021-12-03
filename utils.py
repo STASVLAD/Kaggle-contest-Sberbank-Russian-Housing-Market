@@ -10,9 +10,13 @@ from sklearn.metrics.pairwise import haversine_distances
 
 def encode(df):
     # Timestamp encoding
-    df['timestamp_year'] = df['timestamp'].dt.year
-    df['timestamp_month'] = df['timestamp'].dt.month
     df['timestamp_day'] = df['timestamp'].dt.day
+    df['timestamp_month'] = df['timestamp'].dt.month
+    df['timestamp_year'] = df['timestamp'].dt.year
+
+    df['timestamp_weekday'] = df['timestamp'].dt.weekday
+    df['timestamp_quarter'] = df['timestamp'].dt.quarter
+
     df.drop(labels='timestamp', axis=1, inplace=True)
 
     # Categorical columns encoding
@@ -109,6 +113,8 @@ def remove_outliers(all_df):
 
     all_df.loc[all_df['state'] > 30, 'state'] = np.nan
 
+    all_df.loc[all_df['preschool_quota'] == 0, 'preschool_quota'] = np.nan
+
     # Logical outliers
     all_df.loc[all_df['life_sq'] > all_df['full_sq'], 'life_sq'] = np.nan
     all_df.loc[all_df['floor'] > all_df['max_floor'], 'max_floor'] = np.nan
@@ -143,3 +149,32 @@ def tverskoe_issue_fix(df):
     fix_df = pd.read_excel('data/BAD_ADDRESS_FIX.xlsx').drop_duplicates('id').set_index('id')
     df.update(fix_df, overwrite=True)
     print('Fix: ', df.index.intersection(fix_df.index).shape[0])
+
+
+def create_new_features(all_df):
+    all_df['floor_by_max_floor'] = all_df['floor'] / all_df['max_floor']
+    all_df["extra_sq"] = all_df["full_sq"] - all_df["life_sq"]
+
+    # Room
+    all_df['avg_room_size'] = (all_df['life_sq'] - all_df['kitch_sq']) / all_df['num_room']
+    all_df['life_sq_prop'] = all_df['life_sq'] / all_df['full_sq']
+    all_df['kitch_sq_prop'] = all_df['kitch_sq'] / all_df['full_sq']
+
+    # Calculate age of building
+    all_df['build_age'] = all_df['timestamp_year'] - all_df['build_year']
+    all_df = all_df.drop('build_year', axis=1)
+
+    # Population
+    all_df['population_den'] = all_df['raion_popul'] / all_df['area_m']
+    all_df['gender_rate'] = all_df['male_f'] / all_df['female_f']
+    all_df['working_rate'] = all_df['work_all'] / all_df['full_all']
+
+    # Education
+    all_df['preschool_ratio'] = all_df['children_preschool'] / all_df['preschool_quota']
+    all_df['school_ratio'] = all_df['children_school'] / all_df['school_quota']
+
+    # NaNs count
+    all_df['nan_count'] = all_df[['full_sq', 'build_age', 'life_sq', 'floor', 'max_floor', 'num_room']].isnull().sum(axis=1)
+
+    # all_df = all_df.drop('timestamp_year', axis=1)
+    return all_df
