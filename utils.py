@@ -38,17 +38,17 @@ def encode(df):
 
 
 def create_submission(model, X_test):
-    submission = pd.read_csv('data/sample_submission.csv')
+    submission = pd.read_csv('data/submits/sample_submission.csv')
     pred = model.predict(X_test)
     if len(pred[pred < 0]):
         print('WARNING: NEGATIVE PREDICTIONS')
         pred = np.abs(pred)
     submission['price_doc'] = pred
-    submission.to_csv('submission.csv', index=False)
+    submission.to_csv('data/submits/submission.csv', index=False)
 
 
 def get_place(my_score):
-    df = pd.read_csv('submits/publicleaderboard.csv')
+    df = pd.read_csv('data/submits/publicleaderboard.csv')
     scores = df['Score'].values
     scores = np.append(scores, my_score)
     scores = np.sort(scores)
