@@ -34,7 +34,19 @@ def create_new_features(all_df):
     # Population
     all_df['population_den'] = all_df['raion_popul'] / all_df['area_m']
     all_df['gender_rate'] = all_df['male_f'] / all_df['female_f']
+
+    # Young
+    all_df['young_rate'] = all_df['young_all'] / all_df['raion_popul']
+    all_df['young_gender_rate'] = all_df['young_male'] / all_df['young_female']
+
+    # Work
     all_df['working_rate'] = all_df['work_all'] / all_df['full_all']
+    all_df['working_gender_rate'] = all_df['work_male'] / all_df['work_female']
+    all_df['working_young_rate'] = all_df['young_all'] / all_df['work_all']
+
+    # Old
+    all_df['ekder_rate'] = all_df['ekder_all'] / all_df['raion_popul']
+    all_df['ekder_gender_rate'] = all_df['ekder_male'] / all_df['ekder_female']
 
     # Education
     all_df['preschool_ratio'] = all_df['children_preschool'] / all_df['preschool_quota']
@@ -43,58 +55,46 @@ def create_new_features(all_df):
     # NaNs count
     all_df['nan_count'] = all_df[['full_sq', 'build_age', 'life_sq', 'floor', 'max_floor', 'num_room']].isnull().sum(axis=1)
 
-    # statistical features
+    # Statistical features
     all_df = get_stats_target(all_df, 'sub_area', 'max_floor')
     all_df = get_stats_target(all_df, 'sub_area', 'num_room')
     all_df = get_stats_target(all_df, 'sub_area', 'full_sq')
     all_df = get_stats_target(all_df, 'sub_area', 'life_sq')
     all_df = get_stats_target(all_df, 'sub_area', 'kitch_sq')
 
-    # district features
-    all_df['hospital_bed_density'] = all_df.hospital_beds_raion / all_df.raion_popul
-    all_df['healthcare_centers_density'] = all_df.healthcare_centers_raion / all_df.raion_popul
-    all_df['shopping_centers_density'] = all_df.shopping_centers_raion / all_df.raion_popul
-    all_df['university_top_20_density'] = all_df.university_top_20_raion / all_df.raion_popul
-    all_df['sport_objects_density'] = all_df.sport_objects_raion / all_df.raion_popul
-    all_df['best_university_ratio'] = all_df.university_top_20_raion / (all_df.sport_objects_raion + 1)
-    all_df['good_bad_propotion'] = (all_df.sport_objects_raion + 1) / (all_df.additional_education_raion + 1)
-    all_df['_num_schools'] = all_df.sport_objects_raion + all_df.additional_education_raion
-    all_df['_schools_density'] = all_df._num_schools + all_df.raion_popul
-    all_df['_additional_education_density'] = all_df.additional_education_raion / all_df.raion_popul
+    # District features
+    all_df['hospital_bed_density'] = all_df['hospital_beds_raion'] / all_df['raion_popul']
+    all_df['healthcare_centers_density'] = all_df['healthcare_centers_raion'] / all_df['raion_popul']
+    all_df['shopping_centers_density'] = all_df['shopping_centers_raion'] / all_df['raion_popul']
+    all_df['university_top_20_density'] = all_df['university_top_20_raion'] / all_df['raion_popul']
+    all_df['sport_objects_density'] = all_df['sport_objects_raion'] / all_df['raion_popul']
+    all_df['best_university_ratio'] = all_df['university_top_20_raion'] / (all_df['sport_objects_raion'] + 1)
+    all_df['good_bad_propotion'] = (all_df['sport_objects_raion'] + 1) / (all_df['additional_education_raion'] + 1)
+    all_df['num_schools'] = all_df['sport_objects_raion'] + all_df['additional_education_raion']
+    all_df['schools_density'] = all_df['num_schools'] + all_df['raion_popul']
+    all_df['additional_education_density'] = all_df['additional_education_raion'] / all_df['raion_popul']
 
-    all_df['_raion_top_20_school'] = all_df['school_education_centers_top_20_raion'] / \
+    all_df['raion_top_20_school'] = all_df['school_education_centers_top_20_raion'] / \
         all_df['school_education_centers_raion']
 
-    all_df['young_ratio'] = all_df.young_all / all_df.raion_popul
-    all_df['young_female_ratio'] = all_df.young_female / all_df.raion_popul
-    all_df['young_male_ratio'] = all_df.young_male / all_df.raion_popul
-
-    all_df['work_female_ratio'] = all_df.work_female / all_df.raion_popul
-    all_df['work_male_ratio'] = all_df.work_male / all_df.raion_popul
-
-    all_df['children_burden'] = all_df.young_all / all_df.work_all
-    all_df['ekder_ratio'] = all_df.ekder_all / all_df.raion_popul
-    all_df['ekder_female_ratio'] = all_df.ekder_female / all_df.raion_popul
-    all_df['ekder_male_ratio'] = all_df.ekder_male / all_df.raion_popul
-
-    all_df['congestion_metro'] = all_df.metro_km_avto / all_df.metro_min_avto
+    all_df['congestion_metro'] = all_df['metro_km_avto'] / all_df['metro_min_avto']
     all_df['congestion_metro'].fillna(all_df['congestion_metro'].mean(), inplace=True)
-    all_df['congestion_railroad'] = all_df.railroad_station_avto_km / all_df.railroad_station_avto_min
+    all_df['congestion_railroad'] = all_df['railroad_station_avto_km'] / all_df['railroad_station_avto_min']
 
-    all_df['square_per_office_500'] = all_df.office_sqm_500 / all_df.office_count_500
-    all_df['square_per_trc_500'] = all_df.trc_sqm_500 / all_df.trc_count_500
-    all_df['square_per_office_1000'] = all_df.office_sqm_1000 / all_df.office_count_1000
-    all_df['square_per_trc_1000'] = all_df.trc_sqm_1000 / all_df.trc_count_1000
-    all_df['square_per_office_1500'] = all_df.office_sqm_1500 / all_df.office_count_1500
-    all_df['square_per_trc_1500'] = all_df.trc_sqm_1500 / all_df.trc_count_1500
-    all_df['square_per_office_2000'] = all_df.office_sqm_2000 / all_df.office_count_2000
-    all_df['square_per_trc_2000'] = all_df.trc_sqm_2000 / all_df.trc_count_2000
-    all_df['square_per_office_3000'] = all_df.office_sqm_3000 / all_df.office_count_3000
-    all_df['square_per_trc_3000'] = all_df.trc_sqm_3000 / all_df.trc_count_3000
-    all_df['square_per_office_5000'] = all_df.office_sqm_5000 / all_df.office_count_5000
-    all_df['square_per_trc_5000'] = all_df.trc_sqm_5000 / all_df.trc_count_5000
+    all_df['square_per_office_500'] = all_df['office_sqm_500'] / all_df['office_count_500']
+    all_df['square_per_trc_500'] = all_df['trc_sqm_500'] / all_df['trc_count_500']
+    all_df['square_per_office_1000'] = all_df['office_sqm_1000'] / all_df['office_count_1000']
+    all_df['square_per_trc_1000'] = all_df['trc_sqm_1000'] / all_df['trc_count_1000']
+    all_df['square_per_office_1500'] = all_df['office_sqm_1500'] / all_df['office_count_1500']
+    all_df['square_per_trc_1500'] = all_df['trc_sqm_1500'] / all_df['trc_count_1500']
+    all_df['square_per_office_2000'] = all_df['office_sqm_2000'] / all_df['office_count_2000']
+    all_df['square_per_trc_2000'] = all_df['trc_sqm_2000'] / all_df['trc_count_2000']
+    all_df['square_per_office_3000'] = all_df['office_sqm_3000'] / all_df['office_count_3000']
+    all_df['square_per_trc_3000'] = all_df['trc_sqm_3000'] / all_df['trc_count_3000']
+    all_df['square_per_office_5000'] = all_df['office_sqm_5000'] / all_df['office_count_5000']
+    all_df['square_per_trc_5000'] = all_df['trc_sqm_5000'] / all_df['trc_count_5000']
 
-    all_df['cafe_sum_500_diff'] = all_df.cafe_sum_500_max_price_avg - all_df.cafe_sum_500_min_price_avg
+    all_df['cafe_sum_500_diff'] = all_df['cafe_sum_500_max_price_avg'] - all_df['cafe_sum_500_min_price_avg']
 
     # The activity in the real estate market for each particular month is an important factor.
     # Thus, creating columns for month years and the no. of houses for each month year(month_year_cnt).
