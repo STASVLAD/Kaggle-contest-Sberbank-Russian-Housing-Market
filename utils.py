@@ -137,8 +137,8 @@ def remove_outliers(all_df):
 
 def remove_fake_prices(df, price_sqm_l=10000, price_sqm_h=600000):
     # Price outliers
-    idx_outliers_high = df[df['price_doc'] / df['full_sq'] > price_sqm_h].index
-    idx_outliers_low = df[df['price_doc'] / df['full_sq'] < price_sqm_l].index
+    idx_outliers_high = df[df['price_doc'] / df['full_sq'] >= price_sqm_h].index
+    idx_outliers_low = df[df['price_doc'] / df['full_sq'] <= price_sqm_l].index
     idx_outliers = idx_outliers_low.append(idx_outliers_high)
 
     df = df.drop(idx_outliers, axis=0)
