@@ -96,13 +96,12 @@ def create_new_features(all_df):
 
     all_df['cafe_sum_500_diff'] = all_df['cafe_sum_500_max_price_avg'] - all_df['cafe_sum_500_min_price_avg']
 
-    # The activity in the real estate market for each particular month is an important factor.
-    # Thus, creating columns for month years and the no. of houses for each month year(month_year_cnt).
+    # month_year_cnt
     month_year = (all_df["timestamp_month"] + all_df["timestamp_year"] * 100)
     month_year_cnt_map = month_year.value_counts().to_dict()
     all_df["month_year_cnt"] = month_year.map(month_year_cnt_map)
 
-    # Creating a column for week-year count
+    # week-year count
     week_year = (all_df["timestamp_weekofyear"] + all_df["timestamp_year"] * 100)
     week_year_cnt_map = week_year.value_counts().to_dict()
     all_df["week_year_cnt"] = week_year.map(week_year_cnt_map)
